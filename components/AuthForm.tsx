@@ -1,20 +1,17 @@
 "use client";
 
-import { useState } from "react";
-import {
-  FieldValue,
-  FieldValues,
-  SubmitHandler,
-  useForm,
-} from "react-hook-form";
+import { useEffect, useState } from "react";
+import { SubmitHandler, useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import * as z from "zod";
-import { set } from "zod/v4-mini";
 import Input from "./input/Input";
 import formSchema from "@/utils/zod/FormSchema";
 import { Button } from "./Button";
 import GoogleButton from "react-google-button";
 import { FacebookLoginButton } from "react-social-login-buttons";
+import axios from "axios";
+import { toast } from "sonner";
+import { signIn } from "next-auth/react";
 interface AuthFormProps {
   type: "login" | "register";
   setType: React.Dispatch<React.SetStateAction<"login" | "register">>;
@@ -22,15 +19,17 @@ interface AuthFormProps {
 export default function AuthForm({ type, setType }: AuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
 
-  // Function to change the form type between login and register
   const toggleFormType = () => {
     setType((prev: "login" | "register") =>
       prev === "login" ? "register" : "login"
     );
+    reset();
   };
 
-  // Initialize the form with react-hook-form
-  // and use the Zod schema for validation
+  useEffect(() => {
+    console.log(`Current Type: ${type}`);
+  }, [type]);
+
   const {
     register,
     handleSubmit,
@@ -40,34 +39,62 @@ export default function AuthForm({ type, setType }: AuthFormProps) {
     resolver: zodResolver(formSchema),
     mode: "onChange",
     reValidateMode: "onChange",
-    defaultValues: {
-      name: "",
-      email: "",
-      password: "",
-    },
   });
 
-  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = (data) => {
+  const onSubmit: SubmitHandler<z.infer<typeof formSchema>> = async (data) => {
     setIsLoading(true);
-
-    if (type === "login") {
-      // next auth login
+    console.log("Form Data:", data);
+    if (type === "register") {
+      axios
+        .post("/api/registration", data)
+        .then(() => {
+          toast.success("Registration successful!");
+        })
+        .catch((error) => {
+          toast.error(error.response?.data || "Registration failed!");
+        })
+        .finally(() => {
+          setIsLoading(false);
+        });
     }
 
-    if (type === "register") {
-      // axios register db call
+    if (type === "login") {
+      try {
+        const res = await signIn("credentials", {
+          redirect: false,
+          email: data.email,
+          password: data.password,
+        });
+
+        if (res?.error) {
+          toast.error(res.error);
+        } else {
+          toast.success("Login successful!");
+        }
+
+        reset();
+      } catch (error) {
+        console.error(error);
+        toast.error("Login failed!");
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
   const otherProviderSign = (action: string) => {
-    setIsLoading(true);
-    // Handle other provider sign-in
+    // TODO: handle other provider sign-in
   };
 
   return (
     <div className="sm:w-full sm:max-w-md sm:mx-auto  ">
       <div className="bg-white rounded-lg shadow-md px-4 py-8 sm:p-10">
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
+        <form
+          onSubmit={handleSubmit(onSubmit, (error) => {
+            console.log(error, "error");
+          })}
+          className="space-y-6"
+        >
           {type === "register" && (
             <Input
               label="Name"
@@ -76,6 +103,7 @@ export default function AuthForm({ type, setType }: AuthFormProps) {
               required
               register={register}
               errors={errors}
+              disabled={isLoading}
             />
           )}
           <Input
@@ -84,6 +112,7 @@ export default function AuthForm({ type, setType }: AuthFormProps) {
             type="email"
             register={register}
             errors={errors}
+            disabled={isLoading}
           />
           <Input
             label="Password"
@@ -92,6 +121,7 @@ export default function AuthForm({ type, setType }: AuthFormProps) {
             required
             register={register}
             errors={errors}
+            disabled={isLoading}
           />
           <Button type="submit" disabled={isLoading} fullWidth>
             {type === "login" ? "Sign in" : "Register"}
