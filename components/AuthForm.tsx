@@ -8,17 +8,18 @@ import Input from "./input/Input";
 import formSchema from "@/utils/zod/FormSchema";
 import { Button } from "./Button";
 import GoogleButton from "react-google-button";
-import { FacebookLoginButton } from "react-social-login-buttons";
 import axios from "axios";
 import { toast } from "sonner";
-import { signIn } from "next-auth/react";
+import { signIn, useSession } from "next-auth/react";
+import { useRouter } from "next/navigation";
 interface AuthFormProps {
   type: "login" | "register";
   setType: React.Dispatch<React.SetStateAction<"login" | "register">>;
 }
 export default function AuthForm({ type, setType }: AuthFormProps) {
   const [isLoading, setIsLoading] = useState(false);
-
+  const session = useSession();
+  const router = useRouter();
   const toggleFormType = () => {
     setType((prev: "login" | "register") =>
       prev === "login" ? "register" : "login"
@@ -27,8 +28,10 @@ export default function AuthForm({ type, setType }: AuthFormProps) {
   };
 
   useEffect(() => {
-    console.log(`Current Type: ${type}`);
-  }, [type]);
+    if (session.status === "authenticated") {
+      router.push("/users");
+    }
+  }, [session?.status, router]);
 
   const {
     register,
@@ -49,6 +52,10 @@ export default function AuthForm({ type, setType }: AuthFormProps) {
         .post("/api/registration", data)
         .then(() => {
           toast.success("Registration successful!");
+          setTimeout(() => {
+            signIn("credentials", data);
+            toast.success("Login successful!");
+          }, 3000);
         })
         .catch((error) => {
           toast.error(error.response?.data || "Registration failed!");
@@ -70,6 +77,7 @@ export default function AuthForm({ type, setType }: AuthFormProps) {
           toast.error(res.error);
         } else {
           toast.success("Login successful!");
+          router.push("/users");
         }
 
         reset();
@@ -83,7 +91,24 @@ export default function AuthForm({ type, setType }: AuthFormProps) {
   };
 
   const otherProviderSign = (action: string) => {
-    // TODO: handle other provider sign-in
+    setIsLoading(true);
+    signIn(action, {
+      redirect: false,
+    })
+      .then((callback) => {
+        if (callback?.error) {
+          toast.error(callback.error);
+        } else {
+          router.push("/users");
+        }
+      })
+      .catch((error) => {
+        console.error(error);
+        toast.error("Login failed!");
+      })
+      .finally(() => {
+        setIsLoading(false);
+      });
   };
 
   return (
@@ -133,9 +158,7 @@ export default function AuthForm({ type, setType }: AuthFormProps) {
               <div className="w-full border-t border-gray-300" />
             </div>
             <div className="relative flex justify-center text-sm">
-              <span className="px-2 bg-white text-gray-500">
-                Or continue with
-              </span>
+              <span className="px-2 bg-white text-gray-500">Or continue</span>
             </div>
           </div>
         </div>
@@ -143,23 +166,12 @@ export default function AuthForm({ type, setType }: AuthFormProps) {
           <div className="flex-1">
             <GoogleButton
               onClick={() => otherProviderSign("google")}
-              type="light"
-              label="Google"
               style={{
                 width: "100%",
                 textAlign: "center",
                 fontSize: "20px",
-                paddingRight: "35px",
               }}
             />
-          </div>
-          <div className="flex-1">
-            <FacebookLoginButton
-              onClick={() => otherProviderSign("facebook")}
-              style={{ width: "100%" }}
-            >
-              <span className="flex justify-center text-[20px]">Facebook</span>
-            </FacebookLoginButton>
           </div>
         </div>
         {type === "login" ? (
