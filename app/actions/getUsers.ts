@@ -11,7 +11,7 @@ const getUsers = async () => {
       orderBy: {
         createdAt: "desc",
       },
-      where: {
+      where: { // I don't want the current user to be in the list
         NOT: {
           email: session.user.email,
         },

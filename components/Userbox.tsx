@@ -26,7 +26,7 @@ const Userbox = ({ user }: { user: User }) => {
   return (
     <div
       onClick={handleClick}
-      className="w-full relative flex items-center space-x-4 p-4 bg-white rounded-xl shadow-sm transition hover:shadow-md hover:bg-orange-50 cursor-pointer group"
+      className="w-full relative flex items-center space-x-4 p-4 bg-white rounded-xl shadow-sm transition hover:shadow-md hover:bg-orange-50 hover:border-b-1 cursor-pointer group"
     >
       <Avatar user={user} />
       <div className="flex-1 min-w-0">

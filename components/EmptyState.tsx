@@ -6,7 +6,7 @@ const EmptyState = () => {
           <h3 className="text-lg font-semibold text-orange-600">
             Start a conversation
           </h3>
-          <p className="mt-2 text-sm text-gray-600">
+          <p className="mt-2 text-sm text-gray-600 italic">
             Select a chat to start messaging.
           </p>
         </div>
