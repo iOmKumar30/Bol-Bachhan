@@ -1,15 +1,15 @@
 "use client";
-import { Conversation, User, Message } from "@prisma/client";
-import { useRouter } from "next/navigation";
-import { useCallback, useMemo } from "react";
+import { CompleteConversationType } from "@/app/types";
 import clsx from "clsx";
 import { format } from "date-fns";
 import { useSession } from "next-auth/react";
-import { CompleteConversationType } from "@/app/types";
+import { useRouter } from "next/navigation";
+import { useCallback, useMemo } from "react";
 
 import useOtherUsers from "@/app/hooks/useOtherUsers";
 import Avatar from "./Avatar";
 import ConvoSkeleton from "./ConvoSkeleton";
+import AvatarGroup from "./AvatarGroup";
 
 const ConversationBox = ({
   data,
@@ -80,7 +80,7 @@ const ConversationBox = ({
           : "bg-white hover:bg-orange-50 hover:shadow-sm"
       )}
     >
-      <Avatar user={otherUsers!} />
+      {data.isGroup ? <AvatarGroup users={data.users} /> : <Avatar user={otherUsers!} />}
       <div className="flex-1 min-w-0">
         <div className="focus:outline-none">
           <div className="flex justify-between items-center mb-0.5">
@@ -96,7 +96,9 @@ const ConversationBox = ({
           <p
             className={clsx(
               "text-xs text-black truncate font-bold",
-              (hasSeen || lastMsg?.sender?.email === userEmail) ? "font-normal" : "font-bold"
+              hasSeen || lastMsg?.sender?.email === userEmail
+                ? "font-normal"
+                : "font-bold"
             )}
           >
             {lastMsgText}

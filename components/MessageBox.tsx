@@ -2,10 +2,11 @@
 
 import { CompleteMessageType } from "@/app/types";
 import clsx from "clsx";
-import { useSession } from "next-auth/react";
-import Avatar from "./Avatar";
-import Image from "next/image";
 import { format } from "date-fns/format";
+import { useSession } from "next-auth/react";
+import Image from "next/image";
+import { useState } from "react";
+import ImageModal from "./ImageModal";
 
 const MessageSkeleton = () => {
   return (
@@ -30,7 +31,7 @@ const MessageBox = ({
   data: CompleteMessageType;
 }) => {
   const session = useSession();
-
+  const [imageModalOpen, setImageModalOpen] = useState(false);
   if (session.status === "loading") {
     return (
       <div className="flex flex-col gap-3 ">
@@ -70,19 +71,25 @@ const MessageBox = ({
       </div> */}
       <div className={body}>
         <div className="flex items-center gap-1">
-          <div className="text-xs text-gray-500">{data.sender.name}</div>
+          <div className="text-xs text-gray-500">{data.sender.name || "Unknown"}</div>
           <div className="text-xs text-gray-400">
             {format(new Date(data.createdAt), "p")}
           </div>
         </div>
         <div className={message}>
+          <ImageModal
+            src={data.image}
+            isOpen={imageModalOpen}
+            onClose={() => setImageModalOpen(false)}
+          />
           {data.image ? (
             <Image
+              onClick={() => setImageModalOpen(true)}
               src={data.image}
               alt="Message Image"
               width={250}
               height={250}
-              className="object-cover cursor-pointer hover:scale-105 transition translate"
+              className="object-cover cursor-pointer hover:scale-105 transition translate rounded-md"
             />
           ) : (
             data.body

@@ -2,9 +2,9 @@
 
 import useConversation from "@/app/hooks/useConversation";
 import { CompleteMessageType } from "@/app/types";
-import { useRef, useState, useEffect } from "react";
-import MessageBox from "./MessageBox";
 import axios from "axios";
+import { useEffect, useRef, useState } from "react";
+import MessageBox from "./MessageBox";
 const ConvoBody = ({
   initialMessages,
 }: {
@@ -19,10 +19,9 @@ const ConvoBody = ({
   }, [conversationId]);
 
   useEffect(() => {
-    if (bottomRef.current) {
-      bottomRef.current.scrollIntoView({ behavior: "smooth" });
-    }
-  }, [messages]);
+    bottomRef.current?.scrollIntoView({ behavior: "smooth" });
+  }, [conversationId]);
+
   return (
     <div className="flex-1 overflow-y-auto">
       {messages.map((message, i) => (

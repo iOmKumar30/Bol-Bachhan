@@ -6,13 +6,15 @@ import EmptyState from "@/components/EmptyState";
 import MessageForm from "@/components/MessageForm";
 
 interface ConversationPageProps {
-  params: { conversationId: string };
+  params: Promise<{ conversationId: string }>;
 }
-const conversationId = async ({ params }: ConversationPageProps) => {
+const conversationId = async (props: ConversationPageProps) => {
+  const params = await props.params;
   const { conversationId } = params;
 
   const conversation = await getConversationById(conversationId);
   const messages = await getMessages(conversationId);
+  console.log("conversation", conversation);
 
   if (!conversation) {
     return (
@@ -28,7 +30,7 @@ const conversationId = async ({ params }: ConversationPageProps) => {
     <div className="lg:pl-80 h-full">
       <div className="h-full flex flex-col">
         <ConvoHeader conversation={conversation} />
-        <ConvoBody initialMessages = {messages} />
+        <ConvoBody initialMessages={messages} />
         <MessageForm />
       </div>
     </div>

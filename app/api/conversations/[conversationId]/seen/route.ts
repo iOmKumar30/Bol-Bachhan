@@ -5,7 +5,8 @@ interface parameters {
   conversationId: string;
 }
 
-export async function POST(req: Request, { params }: { params: parameters }) {
+export async function POST(req: Request, props: { params: Promise<parameters> }) {
+  const params = await props.params;
   try {
     const currentUser = await getCurrentUser();
     const { conversationId } = params;

@@ -18,8 +18,6 @@ const baseButtonStyle = `
   transition-all duration-200 ease-in-out
   focus:outline-none focus:ring-2 focus:ring-offset-2
   focus:ring-orange-500 focus:ring-offset-orange-200
-  bg-orange-500 text-white
-  hover:bg-orange-600
   hover:scale-105
   disabled:opacity-60 disabled:cursor-not-allowed
 `;
