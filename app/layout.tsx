@@ -1,17 +1,8 @@
+import ActiveStatus from "@/components/ActiveStatus";
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
-import "./globals.css";
-import ToasterProvider from "./context/toaster-provider";
 import AuthContext from "./context/AuthContext";
-const geistSans = Geist({
-  variable: "--font-geist-sans",
-  subsets: ["latin"],
-});
-
-const geistMono = Geist_Mono({
-  variable: "--font-geist-mono",
-  subsets: ["latin"],
-});
+import ToasterProvider from "./context/toaster-provider";
+import "./globals.css";
 
 export const metadata: Metadata = {
   title: "Bol Bachhan",
@@ -25,11 +16,10 @@ export default function RootLayout({
 }>) {
   return (
     <html lang="en">
-      <body
-        className={`${geistSans.variable} ${geistMono.variable} antialiased`}
-      >
+      <body>
         <AuthContext>
           <ToasterProvider />
+          <ActiveStatus />
           {children}
         </AuthContext>
       </body>

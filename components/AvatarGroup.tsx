@@ -1,9 +1,14 @@
 "use client";
 import { User } from "@prisma/client";
 import Image from "next/image";
+import { useEffect, useState } from "react";
 const AvatarGroup = ({ users }: { users: User[] }) => {
-  const shuffledUsers = [...users].sort(() => 0.5 - Math.random());
-  const displayUsers = shuffledUsers.slice(0, 3);
+  const [displayUsers, setDisplayUsers] = useState<User[]>(users.slice(0, 3));
+
+  useEffect(() => {
+    const shuffled = [...users].sort(() => 0.5 - Math.random());
+    setDisplayUsers(shuffled.slice(0, 3));
+  }, [users]);
 
   const positionMap = {
     0: "top-0 left-[12px]",

@@ -27,13 +27,13 @@ const conversationId = async (props: ConversationPageProps) => {
   }
 
   return (
-    <div className="lg:pl-80 h-full">
-      <div className="h-full flex flex-col">
-        <ConvoHeader conversation={conversation} />
-        <ConvoBody initialMessages={messages} />
-        <MessageForm />
+      <div className="lg:pl-80 h-full">
+        <div className="h-full flex flex-col">
+          <ConvoHeader conversation={conversation} />
+          <ConvoBody initialMessages={messages} />
+          <MessageForm />
+        </div>
       </div>
-    </div>
   );
 };
 

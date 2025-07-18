@@ -8,8 +8,8 @@ import { useCallback, useMemo } from "react";
 
 import useOtherUsers from "@/app/hooks/useOtherUsers";
 import Avatar from "./Avatar";
-import ConvoSkeleton from "./ConvoSkeleton";
 import AvatarGroup from "./AvatarGroup";
+import ConvoSkeleton from "./ConvoSkeleton";
 
 const ConversationBox = ({
   data,

@@ -1,6 +1,7 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 
 import prisma from "@/libs/prismadb";
+import { pusherServer } from "@/libs/pusher";
 import { NextResponse } from "next/server";
 
 export async function POST(req: Request) {
@@ -38,6 +39,11 @@ export async function POST(req: Request) {
         },
       });
 
+      newConv.users.forEach((user) => {
+        if (user.email) {
+          pusherServer.trigger(user.email, "conversation:new", newConv);
+        }
+      });
       return NextResponse.json(newConv);
     }
 
@@ -85,8 +91,13 @@ export async function POST(req: Request) {
       },
     });
 
-      return NextResponse.json(newConv);
-      
+    newConv.users.forEach((user) => {
+      if (user.email) {
+        pusherServer.trigger(user.email, "conversation:new", newConv);
+      }
+    });
+
+    return NextResponse.json(newConv);
   } catch (error: any) {
     return new NextResponse(error.message, { status: 500 });
   }

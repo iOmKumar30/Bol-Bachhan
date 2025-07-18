@@ -63,18 +63,15 @@ export async function POST(req: Request) {
     const lastMsg =
       updatedConversation.messages[updatedConversation.messages.length - 1];
 
-    await Promise.all(
-      updatedConversation.users.map((user) =>
-        pusherServer.trigger(user.email!, "conversation:update", {
-          id: conversationId,
-          messages: [lastMsg],
-        })
-      )
-    );
-
+    updatedConversation.users.map((user) => {
+      pusherServer.trigger(user.email!, "conversation:update", {
+        id: conversationId,
+        messages: [lastMsg],
+      });
+    })
     return NextResponse.json(newMessage);
   } catch (e) {
-    console.error(e);
+    console.log(e);
     return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

@@ -1,11 +1,15 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
-import { NextResponse } from "next/server";
 import prisma from "@/libs/prismadb";
+import { pusherServer } from "@/libs/pusher";
+import { NextResponse } from "next/server";
 interface parameters {
   conversationId: string;
 }
 
-export async function POST(req: Request, props: { params: Promise<parameters> }) {
+export async function POST(
+  req: Request,
+  props: { params: Promise<parameters> }
+) {
   const params = await props.params;
   try {
     const currentUser = await getCurrentUser();
@@ -59,6 +63,18 @@ export async function POST(req: Request, props: { params: Promise<parameters> })
         },
       },
     });
+
+    await pusherServer.trigger(currentUser.email, "conversation:update", {
+      id: conversationId,
+      messages: [updatedMsg],
+    });
+
+    if (lastMsg.seenIds.indexOf(currentUser.id) !== -1) {
+      return NextResponse.json(conversation);
+    }
+
+    await pusherServer.trigger(conversationId, "message:update", updatedMsg);
+
     return NextResponse.json(updatedMsg);
   } catch (error) {
     return new NextResponse(String(error), { status: 500 });
