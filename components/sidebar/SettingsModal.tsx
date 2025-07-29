@@ -2,7 +2,10 @@
 import formSchema from "@/utils/zod/FormSchema";
 import { User } from "@prisma/client";
 import axios from "axios";
-import { CldUploadButton } from "next-cloudinary";
+import {
+  CldUploadButton,
+  CloudinaryUploadWidgetResults,
+} from "next-cloudinary";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
@@ -46,12 +49,15 @@ const SettingsModal = ({
     image === "" ||
     image === null ||
     image === undefined;
-  const handleUpload = (result: any) => {
-    // result.info.secure_url contains the uploaded image URL
-    if (result?.info?.secure_url) {
-      setValue("image", result.info.secure_url, { shouldValidate: true });
+  const handleUpload = (res: CloudinaryUploadWidgetResults) => {
+    const info = res?.info as { secure_url?: string };
+    const secureUrl = info?.secure_url;
+    if (!secureUrl) return;
+    try {
+      setValue("image", secureUrl, { shouldValidate: true });
       setImgError(false);
-    } else {
+    } catch (error) {
+      console.error(error);
       setImgError(true);
       toast.error("Image upload failed!");
     }

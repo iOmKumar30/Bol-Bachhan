@@ -1,4 +1,4 @@
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import { authOptions } from "@/libs/auth";
 import { pusherServer } from "@/libs/pusher";
 import { NextApiRequest, NextApiResponse } from "next";
 import { getServerSession } from "next-auth";
@@ -19,4 +19,3 @@ export default async function handler(
   const authResponse = pusherServer.authorizeChannel(socketId, channel, data);
   return res.json(authResponse);
 }
-

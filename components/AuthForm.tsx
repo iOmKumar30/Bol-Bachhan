@@ -1,17 +1,17 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import { SubmitHandler, useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import * as z from "zod";
-import Input from "./input/Input";
 import formSchema from "@/utils/zod/FormSchema";
-import { Button } from "./Button";
-import GoogleButton from "react-google-button";
+import { zodResolver } from "@hookform/resolvers/zod";
 import axios from "axios";
-import { toast } from "sonner";
 import { signIn, useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import { useEffect, useState } from "react";
+import GoogleButton from "react-google-button";
+import { SubmitHandler, useForm } from "react-hook-form";
+import { toast } from "sonner";
+import * as z from "zod";
+import { Button } from "./Button";
+import Input from "./input/Input";
 interface AuthFormProps {
   type: "login" | "register";
   setType: React.Dispatch<React.SetStateAction<"login" | "register">>;
@@ -177,7 +177,7 @@ export default function AuthForm({ type, setType }: AuthFormProps) {
         {type === "login" ? (
           <div className="mt-4 flex justify-center">
             <p className="text-sm text-gray-600">
-              Don't have an account?{" "}
+              Don&apos;t have an account?
               <span
                 onClick={toggleFormType}
                 className="underline cursor-pointer"
@@ -189,7 +189,7 @@ export default function AuthForm({ type, setType }: AuthFormProps) {
         ) : (
           <div className="mt-4 flex justify-center">
             <p className="text-sm text-gray-600">
-              Already have an account?{" "}
+              Already have an account?
               <span
                 onClick={toggleFormType}
                 className="underline cursor-pointer"

@@ -2,11 +2,12 @@
 
 import Link from "next/link";
 import clsx from "clsx";
+import React from "react";
 
 interface diprops {
   label: string;
   href: string;
-  icon: any;
+  icon: React.ElementType;
   active?: boolean;
   onClick?: () => void;
 }

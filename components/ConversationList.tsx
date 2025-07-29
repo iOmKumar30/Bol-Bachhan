@@ -6,7 +6,6 @@ import { User } from "@prisma/client";
 import clsx from "clsx";
 import { find } from "lodash";
 import { useSession } from "next-auth/react";
-import { useRouter } from "next/navigation";
 import { useEffect, useMemo, useState } from "react";
 import { MdOutlineGroupAdd } from "react-icons/md";
 import ConversationBox from "./ConversationBox";
@@ -21,7 +20,7 @@ const ConversationList = ({
   const session = useSession();
   const [conversations, setConversations] = useState(existingConversations);
   const [isGroupModalOpen, setIsGroupModalOpen] = useState(false);
-  const router = useRouter();
+
   const { conversationId, isOpen } = useConversation();
   const pusherKey = useMemo(() => {
     return session.data?.user?.email;

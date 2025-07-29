@@ -1,5 +1,6 @@
 "use client";
 import useOtherUsers from "@/app/hooks/useOtherUsers";
+import useUserActivityStatus from "@/app/hooks/useUserActivityStatus";
 import {
   Dialog,
   DialogPanel,
@@ -8,12 +9,11 @@ import {
 } from "@headlessui/react";
 import { Conversation, User } from "@prisma/client";
 import { format } from "date-fns";
-import React, { useMemo } from "react";
+import React, { useMemo, useState } from "react";
 import { IoClose, IoTrash } from "react-icons/io5";
 import Avatar from "./Avatar";
 import AvatarGroup from "./AvatarGroup";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
-import useUserActivityStatus from "@/app/hooks/useUserActivityStatus";
 
 const ProfileModal = ({
   data,
@@ -28,20 +28,21 @@ const ProfileModal = ({
 }) => {
   const otherUser = useOtherUsers(data);
   // delete confirmation modal state
-  const [isDeleteModalOpen, setIsDeleteModalOpen] = React.useState(false);
-  const joinedOn = useMemo(() => {
-    return format(new Date(otherUser!.createdAt), "PP");
-  }, [otherUser!.createdAt]);
+  const [isDeleteModalOpen, setIsDeleteModalOpen] = useState(false);
+  const joinedOn = useMemo(
+    () => (otherUser ? format(new Date(otherUser.createdAt), "PP") : ""),
+    [otherUser]
+  );
 
   const title = useMemo(() => {
-    return data.name || otherUser?.name || "Conversation";
-  }, [data.name, otherUser?.name]);
+    return data.name || (otherUser ? otherUser.name : "Conversation");
+  }, [data.name, otherUser]);
 
   let statusText = "";
+
+  statusText = useUserActivityStatus(otherUser?.email);
   if (data.isGroup) {
     statusText = `${data.users.length} members`;
-  } else {
-    statusText = useUserActivityStatus(otherUser?.email);
   }
 
   return (
@@ -187,3 +188,4 @@ const ProfileModal = ({
 };
 
 export default ProfileModal;
+

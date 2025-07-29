@@ -90,7 +90,7 @@ const GroupChatModal = ({
                 label="Select Members"
                 options={users.map((user) => ({
                   value: user.id,
-                  label: user.name || user.email,
+                  label: user.name || user.email || "",
                 }))}
                 onChange={(value) =>
                   setValue("members", value, {

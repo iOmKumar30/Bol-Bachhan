@@ -1,7 +1,6 @@
 "use client";
 
 import {
-  Field,
   FieldErrors,
   FieldValues,
   UseFormRegister,
@@ -9,7 +8,6 @@ import {
 const MessageInput = ({
   id,
   register,
-  errors,
   placeholder,
   type,
   required,

@@ -3,11 +3,13 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   _req: Request,
-  { params }: { params: { email: string } }
+  { params }: { params: Promise<{ email: string }> }
 ) {
+  const { email } = await params;
+
   try {
     const user = await prisma.user.findUnique({
-      where: { email: decodeURIComponent(params.email) },
+      where: { email: decodeURIComponent(email) },
       select: { lastActiveAt: true },
     });
 

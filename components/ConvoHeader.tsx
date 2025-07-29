@@ -22,10 +22,9 @@ const ConvoHeader = ({
   const [drawerOpen, setDrawerOpen] = useState(false);
 
   let statusText = "";
+  statusText = useUserActivityStatus(otherUser?.email);
   if (conversation.isGroup) {
     statusText = `${conversation.users.length} members`;
-  } else {
-    statusText = useUserActivityStatus(otherUser?.email);
   }
 
   if (!otherUser) {

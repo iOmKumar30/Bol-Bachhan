@@ -15,7 +15,10 @@ const getMessages = async (conversationId: string) => {
       },
     });
     return messages;
-  } catch (e: any) {
+  } catch (_error) {
+    if (process.env.NODE_ENV === "development") {
+      console.error(_error);
+    }
     return [];
   }
 };

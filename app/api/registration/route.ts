@@ -2,7 +2,6 @@ import bcrypt from "bcrypt";
 import prisma from "@/libs/prismadb";
 import { NextResponse } from "next/server";
 import formSchema from "@/utils/zod/FormSchema";
-import { z } from "zod";
 
 export async function POST(request: Request) {
   try {

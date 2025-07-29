@@ -1,16 +1,19 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
 import prisma from "@/libs/prismadb";
 import { pusherServer } from "@/libs/pusher";
-import { NextResponse } from "next/server";
-interface IParams {
-  conversationId: string;
-}
-export async function DELETE(req: Request, { params }: { params: IParams }) {
+import { NextRequest, NextResponse } from "next/server";
+
+export async function DELETE(
+  req: NextRequest,
+  context: { params: Promise<{ conversationId: string }> }
+) {
   try {
-    const { conversationId } = params;
+    const { conversationId } = await context.params;
+
     if (!conversationId) {
       return new NextResponse("Invalid ID", { status: 400 });
     }
+
     const currentUser = await getCurrentUser();
     if (!currentUser?.id || !currentUser?.email) {
       return new NextResponse("Login required", { status: 401 });
@@ -24,6 +27,7 @@ export async function DELETE(req: Request, { params }: { params: IParams }) {
         users: true,
       },
     });
+
     if (!existingConversation) {
       return new NextResponse("Invalid ID", { status: 404 });
     }
@@ -46,6 +50,7 @@ export async function DELETE(req: Request, { params }: { params: IParams }) {
         );
       }
     });
+
     return NextResponse.json(deletedConversation);
   } catch (error) {
     console.error("Error deleting conversation:", error);

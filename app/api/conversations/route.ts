@@ -98,7 +98,13 @@ export async function POST(req: Request) {
     });
 
     return NextResponse.json(newConv);
-  } catch (error: any) {
-    return new NextResponse(error.message, { status: 500 });
+  } catch (error: unknown) {
+    if (error instanceof Error) {
+      return new NextResponse(error.message, { status: 500 });
+    } else {
+      // handle other types of errors
+      console.error("Unknown error:", error);
+      return new NextResponse("Internal Server Error", { status: 500 });
+    }
   }
 }

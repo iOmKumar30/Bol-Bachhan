@@ -2,11 +2,14 @@
 
 import useConversation from "@/app/hooks/useConversation";
 import axios from "axios";
-import { useForm, FieldValues, SubmitHandler } from "react-hook-form";
+import {
+  CldUploadButton,
+  CloudinaryUploadWidgetResults,
+} from "next-cloudinary";
+import { FieldValues, SubmitHandler, useForm } from "react-hook-form";
 import { HiPhoto } from "react-icons/hi2";
 import { IoMdSend } from "react-icons/io";
 import MessageInput from "./MessageInput";
-import { CldUploadButton } from "next-cloudinary";
 
 const MessageForm = () => {
   const { conversationId } = useConversation();
@@ -26,8 +29,10 @@ const MessageForm = () => {
     axios.post("/api/messages", { ...data, conversationId });
   };
 
-  const handleImageUpload = (res: any) => {
-    const secureUrl = res?.info?.secure_url;
+  const handleImageUpload = (res: CloudinaryUploadWidgetResults) => {
+    const info = res?.info as { secure_url?: string }; // cast to expected shape
+    const secureUrl = info?.secure_url;
+    if (!secureUrl) return;
     if (!secureUrl) return;
 
     axios.post("/api/messages", {
@@ -69,4 +74,3 @@ const MessageForm = () => {
 };
 
 export default MessageForm;
-

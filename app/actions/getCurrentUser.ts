@@ -17,7 +17,10 @@ const getCurrentUser = async () => {
       return null;
     }
     return currentUser;
-  } catch (error) {
+  } catch (_error) {
+    if (process.env.NODE_ENV === "development") {
+      console.error(_error);
+    }
     return null;
   }
 };

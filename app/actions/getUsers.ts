@@ -11,14 +11,18 @@ const getUsers = async () => {
       orderBy: {
         createdAt: "desc",
       },
-      where: { // I don't want the current user to be in the list
+      where: {
+        // I don't want the current user to be in the list
         NOT: {
           email: session.user.email,
         },
       },
     });
     return users;
-  } catch (error) {
+  } catch (_error) {
+    if (process.env.NODE_ENV === "development") {
+      console.error(_error);
+    }
     return;
   }
 };

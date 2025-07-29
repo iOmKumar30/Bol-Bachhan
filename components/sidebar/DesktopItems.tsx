@@ -6,7 +6,7 @@ import Link from "next/link";
 interface diprops {
   label: string;
   href: string;
-  icon: any;
+  icon: React.ElementType;
   active?: boolean;
   onClick?: () => void;
 }
