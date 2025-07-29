@@ -13,6 +13,7 @@ import { IoClose, IoTrash } from "react-icons/io5";
 import Avatar from "./Avatar";
 import AvatarGroup from "./AvatarGroup";
 import ConfirmDeleteModal from "./ConfirmDeleteModal";
+import useUserActivityStatus from "@/app/hooks/useUserActivityStatus";
 
 const ProfileModal = ({
   data,
@@ -36,12 +37,12 @@ const ProfileModal = ({
     return data.name || otherUser?.name || "Conversation";
   }, [data.name, otherUser?.name]);
 
-  const statusText = useMemo(() => {
-    if (data.isGroup) {
-      return `${data.users.length} members`;
-    }
-    return "Active";
-  }, [data]);
+  let statusText = "";
+  if (data.isGroup) {
+    statusText = `${data.users.length} members`;
+  } else {
+    statusText = useUserActivityStatus(otherUser?.email);
+  }
 
   return (
     <>

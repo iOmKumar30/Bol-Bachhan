@@ -3,15 +3,24 @@ import { usePathname } from "next/navigation";
 import { useMemo } from "react";
 
 import { HiChat } from "react-icons/hi";
-import { HiUsers, HiArrowLeftOnRectangle } from "react-icons/hi2";
+import { HiArrowLeftOnRectangle, HiUsers } from "react-icons/hi2";
 
 import { signOut } from "next-auth/react";
 
+import axios from "axios";
 import useConversation from "./useConversation";
 
 const useRoutes = () => {
   const pathname = usePathname();
   const { conversationId } = useConversation();
+  const handleLogout = async () => {
+    try {
+      await axios.post("/api/last-active");
+    } catch (err) {
+      console.error("Failed to update lastActiveAt", err);
+    }
+    signOut();
+  };
 
   const routes = useMemo(
     () => [
@@ -30,7 +39,7 @@ const useRoutes = () => {
       {
         label: "Logout",
         href: "#",
-        onClick: () => signOut(),
+        onClick: handleLogout,
         icon: HiArrowLeftOnRectangle,
       },
     ],

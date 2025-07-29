@@ -1,14 +1,16 @@
 "use client";
 
 import useOtherUsers from "@/app/hooks/useOtherUsers";
+import useUserActivityStatus from "@/app/hooks/useUserActivityStatus";
 import { Conversation, User } from "@prisma/client";
 import Link from "next/link";
-import { useMemo, useState } from "react";
+import { useState } from "react";
 import { HiEllipsisHorizontal } from "react-icons/hi2";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import Avatar from "./Avatar";
-import ProfileModal from "./ProfileModal";
 import LoadingModal from "./LoadingModal";
+import ProfileModal from "./ProfileModal";
+
 const ConvoHeader = ({
   conversation,
 }: {
@@ -19,12 +21,12 @@ const ConvoHeader = ({
   const otherUser = useOtherUsers(conversation);
   const [drawerOpen, setDrawerOpen] = useState(false);
 
-  const statusText = useMemo(() => {
-    if (conversation.isGroup) {
-      return `${conversation.users.length} members`;
-    }
-    return "Active";
-  }, [conversation]);
+  let statusText = "";
+  if (conversation.isGroup) {
+    statusText = `${conversation.users.length} members`;
+  } else {
+    statusText = useUserActivityStatus(otherUser?.email);
+  }
 
   if (!otherUser) {
     return null;

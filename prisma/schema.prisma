@@ -27,6 +27,7 @@ model User {
   hashedPassword String?
   createdAt      DateTime  @default(now())
   updatedAt      DateTime  @updatedAt
+  lastActiveAt   DateTime?
 
   // Array of conversation ids that the user is a part of
   conversationIds String[] @db.ObjectId
