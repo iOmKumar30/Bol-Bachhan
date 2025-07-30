@@ -7,7 +7,13 @@ export async function POST(req: Request) {
   const session = await getServerSession(authOptions);
 
   if (!session?.user?.email) {
-    return new NextResponse("Not authenticated", { status: 401 });
+    return new NextResponse("Not authenticated", {
+      status: 401,
+      headers: {
+        "Access-Control-Allow-Origin": "*", 
+        "Access-Control-Allow-Headers": "Content-Type",
+      },
+    });
   }
 
   const body = await req.json();
@@ -19,5 +25,11 @@ export async function POST(req: Request) {
   };
 
   const authResponse = pusherServer.authorizeChannel(socketId, channel, data);
-  return NextResponse.json(authResponse);
+
+  return new NextResponse(JSON.stringify(authResponse), {
+    headers: {
+      "Content-Type": "application/json",
+      "Access-Control-Allow-Origin": "*",
+    },
+  });
 }
