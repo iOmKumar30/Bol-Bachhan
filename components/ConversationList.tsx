@@ -40,18 +40,32 @@ const ConversationList = ({
     };
 
     const updateHandler = (conversation: CompleteConversationType) => {
-      setConversations((current) =>
-        current.map((currentConvo) => {
-          if (currentConvo.id === conversation.id) {
-            return {
-              ...currentConvo,
-              messages: conversation.messages,
-            };
-          }
-          return currentConvo;
-        })
-      );
+      setConversations((current) => {
+        // update the messages for the conversation with the matching ID
+        const updatedConversations = current.map((convo) =>
+          convo.id === conversation.id
+            ? { ...convo, messages: conversation.messages }
+            : convo
+        );
+
+        // Find the updated conversation object from the new array
+        const updatedConvo = updatedConversations.find(
+          (convo) => convo.id === conversation.id
+        );
+
+        if (!updatedConvo) {
+          return current;
+        }
+
+        return [
+          updatedConvo,
+          ...updatedConversations.filter(
+            (convo) => convo.id !== conversation.id
+          ),
+        ];
+      });
     };
+
     const removeHandler = (conversation: CompleteConversationType) => {
       setConversations((current) =>
         current.filter((c) => c.id !== conversation.id)
