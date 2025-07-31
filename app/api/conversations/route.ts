@@ -1,5 +1,4 @@
 import getCurrentUser from "@/app/actions/getCurrentUser";
-
 import prisma from "@/libs/prismadb";
 import { pusherServer } from "@/libs/pusher";
 import { NextResponse } from "next/server";
@@ -39,16 +38,15 @@ export async function POST(req: Request) {
         },
       });
 
-      newConv.users.forEach((user) => {
+      for (const user of newConv.users) {
         if (user.email) {
-          pusherServer.trigger(user.email, "conversation:new", newConv);
+          await pusherServer.trigger(user.email, "conversation:new", newConv);
         }
-      });
+      }
+
       return NextResponse.json(newConv);
     }
 
-    // for one to one chat
-    // check if the conversation already exist
     const existingConversations = await prisma.conversation.findMany({
       where: {
         OR: [
@@ -67,7 +65,6 @@ export async function POST(req: Request) {
     });
 
     const finalConv = existingConversations[0];
-
     if (finalConv) {
       return NextResponse.json(finalConv);
     }
@@ -76,14 +73,7 @@ export async function POST(req: Request) {
       data: {
         userIds: [currentUser.id, userId],
         users: {
-          connect: [
-            {
-              id: currentUser.id,
-            },
-            {
-              id: userId,
-            },
-          ],
+          connect: [{ id: currentUser.id }, { id: userId }],
         },
       },
       include: {
@@ -91,20 +81,15 @@ export async function POST(req: Request) {
       },
     });
 
-    newConv.users.forEach((user) => {
+    for (const user of newConv.users) {
       if (user.email) {
-        pusherServer.trigger(user.email, "conversation:new", newConv);
+        await pusherServer.trigger(user.email, "conversation:new", newConv);
       }
-    });
+    }
 
     return NextResponse.json(newConv);
   } catch (error: unknown) {
-    if (error instanceof Error) {
-      return new NextResponse(error.message, { status: 500 });
-    } else {
-      // handle other types of errors
-      console.error("Unknown error:", error);
-      return new NextResponse("Internal Server Error", { status: 500 });
-    }
+    console.error("Error creating conversation:", error);
+    return new NextResponse("Internal Server Error", { status: 500 });
   }
 }

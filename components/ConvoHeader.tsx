@@ -8,6 +8,7 @@ import { useState } from "react";
 import { HiEllipsisHorizontal } from "react-icons/hi2";
 import { IoArrowBackCircleOutline } from "react-icons/io5";
 import Avatar from "./Avatar";
+import AvatarGroup from "./AvatarGroup";
 import LoadingModal from "./LoadingModal";
 import ProfileModal from "./ProfileModal";
 
@@ -50,7 +51,11 @@ const ConvoHeader = ({
             <IoArrowBackCircleOutline size={24} />
           </Link>
 
-          <Avatar user={otherUser!} />
+          {conversation.isGroup ? (
+            <AvatarGroup users={conversation.users} />
+          ) : (
+            <Avatar user={otherUser!} />
+          )}
 
           <div className="flex flex-col leading-tight">
             <span className="text-sm font-medium text-gray-800 truncate">

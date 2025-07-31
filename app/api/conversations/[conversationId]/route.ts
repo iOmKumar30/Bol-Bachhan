@@ -41,15 +41,15 @@ export async function DELETE(
       },
     });
 
-    existingConversation.users.forEach((user) => {
+    for (const user of existingConversation.users) {
       if (user.email) {
-        pusherServer.trigger(
+        await pusherServer.trigger(
           user.email,
           "conversation:remove",
           existingConversation
         );
       }
-    });
+    }
 
     return NextResponse.json(deletedConversation);
   } catch (error) {
